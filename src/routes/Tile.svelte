@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import type { TileModel } from './GameBoardModel';
-	export let tileModel: TileModel;
-	let { col, row, letter } = tileModel;
+	export let tile: TileModel;
+	let { col, row, letter } = tile;
 	const dispatch = createEventDispatcher();
 	function handleClick() {
-		dispatch('selectTile', { col, row, letter });
+		dispatch('selectTile', { tile });
 	}
 </script>
 
 <button
 	on:click={handleClick}
-	class="tile"
-	class:selected={tileModel.selected}
-	style="grid-column-start: {col * 3 + 1}; grid-row-start: {row + 1};">{letter}</button
+	class={`tile ${tile.state}`}
+	style="grid-column-start: {col * 3 + 1}; grid-row-start: {row + 1};">{tile.letter}</button
 >
 
 <style>
@@ -30,7 +29,7 @@
 		font-family: 'ds-digital', Courier, monospace;
 		transition: 0.3s;
 	}
-	.tile:hover {
+	.tile.ready:hover {
 		opacity: 0.5;
 	}
 	.tile.selected {
@@ -38,6 +37,12 @@
 		animation-duration: 1s;
 		animation-iteration-count: infinite;
 		animation-direction: reverse;
+	}
+	.tile.white {
+		background-color: white;
+	}
+	.tile.blue {
+		background-color: cyan;
 	}
 	@keyframes fadeInOut {
 		0% {

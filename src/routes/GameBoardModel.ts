@@ -1,35 +1,44 @@
-enum TileState {
+import type Question from './Question';
+
+export enum TileState {
 	White = 'white',
 	Blue = 'blue',
-	Ready = 'ready'
+	Ready = 'ready',
+	Selected = 'selected'
 }
 
 export interface TileModel {
 	col: number;
 	row: number;
 	state: TileState;
-	selected: boolean;
+	question: string;
+	answer: string;
 	letter: string;
 }
 
-export function createGameBoardModel(cols: number, rows: number, letters: string[]): TileModel[] {
-	if (letters.length !== rows * cols) {
+export function createGameBoardModel(
+	cols: number,
+	rows: number,
+	questions: Question[]
+): TileModel[] {
+	if (questions.length !== rows * cols) {
 		throw new RangeError('Number of questions does not match size of grid.');
 	}
-	return letters.map((letter, index): TileModel => {
+	return questions.map((questionData: Question, index): TileModel => {
 		// use modulo arithmetic to get column number
 		const col = index % cols;
 		// coords stored as doubled row
 		// odd columns get one added to row to offset vertically
 		const row = 2 * Math.floor(index / cols) + (col % 2);
 		const state = TileState.Ready;
-		const selected = false;
+		const { question, answer, letter } = questionData;
 		return {
+			question,
+			answer,
+			letter,
 			col,
 			row,
-			state,
-			selected,
-			letter
+			state
 		};
 	});
 }

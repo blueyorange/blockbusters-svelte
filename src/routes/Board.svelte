@@ -1,30 +1,53 @@
 <script lang="ts">
-	export let letters: string[];
+	import type Question from './Question';
+	export let questions: Question[];
 	import Tile from './Tile.svelte';
-	import { createGameBoardModel } from './GameBoardModel';
-	import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher();
+	import { createGameBoardModel, type TileModel } from './GameBoardModel';
+	import { TileState } from './GameBoardModel';
+	let dialog: HTMLDialogElement;
 	const COLS = 5;
 	const ROWS = 4;
-	let tiles = createGameBoardModel(COLS, ROWS, letters);
-	function handleClick(event: CustomEvent<{ col: number; row: number; letter: string }>) {
-		const { col, row, letter } = event.detail;
-		dispatch('selectLetter', { letter });
-		tiles = tiles.map((tile) => {
-			if (row === tile.row && col === tile.col) {
-				return { ...tile, selected: true };
-			} else {
-				return { ...tile, selected: false };
-			}
-		});
+	let selectedTile: TileModel | null = null;
+	let tiles = createGameBoardModel(COLS, ROWS, questions);
+
+	type SelectTileEvent = CustomEvent<{ tile: TileModel }>;
+
+	function handleSelectTile(event: SelectTileEvent) {
+		selectedTile = event.detail.tile;
+		dialog.showModal();
+	}
+
+	function handleClose() {
+		if (selectedTile) {
+			tiles = tiles.map((tile) => {
+				if (tile === selectedTile) {
+					return { ...tile, state: dialog.returnValue as TileState, letter: '' };
+				} else {
+					return tile;
+				}
+			});
+		}
 	}
 </script>
 
 <div class="grid">
-	{#each tiles as tileModel (tileModel.col + '-' + tileModel.row)}
-		<Tile {tileModel} on:selectTile={handleClick}></Tile>
+	{#each tiles as tile (tile.col + '-' + tile.row)}
+		<Tile {tile} on:selectTile={handleSelectTile}></Tile>
 	{/each}
 </div>
+
+<dialog bind:this={dialog} on:close={handleClose}>
+	<form method="dialog">
+		{selectedTile ? selectedTile.question : ''}
+		<details>
+			<summary> Reveal Answer... </summary>
+			{selectedTile ? selectedTile.answer : ''}
+		</details>
+		The winner is...
+		<button formmethod="dialog" value={TileState.Blue}>Blue</button>
+		<button formmethod="dialog" value={TileState.White}>White</button>
+	</form>
+</dialog>
 
 <style>
 	.grid {
