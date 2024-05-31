@@ -17,6 +17,6 @@
 <style>
 	.container {
 		margin: auto;
-		display: flex;
+		width: 50%;
 	}
 </style>
