@@ -12,7 +12,7 @@
 <button
 	on:click={handleClick}
 	class={`tile ${tile.state}`}
-	style="grid-column-start: {col * 3 + 1}; grid-row-start: {row + 1};">{tile.letter}</button
+	style="grid-column-start: {col * 3 - 2}; grid-row-start: {row + 1};">{tile.letter}</button
 >
 
 <style>
