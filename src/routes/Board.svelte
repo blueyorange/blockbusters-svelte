@@ -18,7 +18,7 @@
 	}
 
 	function handleClose() {
-		if (selectedTile) {
+		if (dialog.returnValue && selectedTile) {
 			tiles = tiles.map((tile) => {
 				if (tile === selectedTile) {
 					return { ...tile, state: dialog.returnValue as TileState, letter: '' };
@@ -27,6 +27,7 @@
 				}
 			});
 		}
+		dialog.returnValue = '';
 	}
 </script>
 
@@ -51,9 +52,10 @@
 
 <style>
 	.grid {
-		--size: 8vh;
+		--size: 50px;
 		--hex-height: calc(sqrt(3) * var(--size));
 		--hex-font-size: var(--hex-height);
+		margin: auto;
 		display: grid;
 		grid-template-columns: repeat(22, calc(var(--size) / 2));
 		grid-template-rows: repeat(13, calc(var(--hex-height) / 2));
