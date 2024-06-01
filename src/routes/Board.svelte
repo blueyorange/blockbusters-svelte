@@ -5,6 +5,7 @@
 	import { createGameBoardModel, type TileModel } from './GameBoardModel';
 	import { TileState } from './GameBoardModel';
 	let dialog: HTMLDialogElement;
+	let details: HTMLDetailsElement;
 	const COLS = 5;
 	const ROWS = 4;
 	let selectedTile: TileModel | null = null;
@@ -28,6 +29,7 @@
 			});
 		}
 		dialog.returnValue = '';
+		details.open = false;
 	}
 </script>
 
@@ -40,7 +42,7 @@
 <dialog bind:this={dialog} on:close={handleClose}>
 	<form method="dialog">
 		{selectedTile ? selectedTile.question : ''}
-		<details>
+		<details bind:this={details}>
 			<summary> Reveal Answer... </summary>
 			{selectedTile ? selectedTile.answer : ''}
 		</details>
