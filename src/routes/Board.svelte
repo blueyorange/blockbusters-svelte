@@ -1,66 +1,69 @@
 <script lang="ts">
-	import type Question from './Question';
-	export let questions: Question[];
-	import Tile from './Tile.svelte';
-	import { createGameBoardModel, type TileModel } from './GameBoardModel';
-	import { TileState } from './GameBoardModel';
-	let dialog: HTMLDialogElement;
-	let details: HTMLDetailsElement;
-	const COLS = 5;
-	const ROWS = 4;
-	let selectedTile: TileModel | null = null;
-	let tiles = createGameBoardModel(COLS, ROWS, questions);
-
-	type SelectTileEvent = CustomEvent<{ tile: TileModel }>;
-
-	function handleSelectTile(event: SelectTileEvent) {
-		selectedTile = event.detail.tile;
-		dialog.showModal();
-	}
-
-	function handleClose() {
-		if (dialog.returnValue && selectedTile) {
-			tiles = tiles.map((tile) => {
-				if (tile === selectedTile) {
-					return { ...tile, state: dialog.returnValue as TileState, letter: '' };
-				} else {
-					return tile;
-				}
-			});
-		}
-		dialog.returnValue = '';
-		details.open = false;
-	}
+	import GameHex from './GameHex';
+	export let hexes: GameHex[];
+	import { selectedLetter } from './stores';
 </script>
 
 <div class="grid">
-	{#each tiles as tile (tile.col + '-' + tile.row)}
-		<Tile {tile} on:selectTile={handleSelectTile}></Tile>
+	{#each hexes as hex (hex.id)}
+		<button
+			on:click={() => selectedLetter.set(hex.letter)}
+			data-letter={hex.letter}
+			class={`hex ${hex.taken} ${!hex.taken && $selectedLetter === hex.letter ? 'selected' : ''}`}
+			style="grid-column-start: {hex.col * 3 - 2}; grid-row-start: {hex.row + 1};"
+			>{hex.letter}</button
+		>
 	{/each}
 </div>
 
-<dialog bind:this={dialog} on:close={handleClose}>
-	<form method="dialog">
-		{selectedTile ? selectedTile.question : ''}
-		<details bind:this={details}>
-			<summary> Reveal Answer... </summary>
-			{selectedTile ? selectedTile.answer : ''}
-		</details>
-		The winner is...
-		<button formmethod="dialog" value={TileState.Blue}>Blue</button>
-		<button formmethod="dialog" value={TileState.White}>White</button>
-	</form>
-</dialog>
-
 <style>
+	@import url('https://fonts.cdnfonts.com/css/ds-digital');
 	.grid {
 		--size: 50px;
 		--hex-height: calc(sqrt(3) * var(--size));
-		--hex-font-size: var(--hex-height);
+		font-size: var(--hex-height);
 		margin: auto;
 		display: grid;
 		grid-template-columns: repeat(22, calc(var(--size) / 2));
 		grid-template-rows: repeat(13, calc(var(--hex-height) / 2));
 		grid-gap: 1px;
+	}
+	.hex {
+		border: none;
+		background-color: yellow;
+		width: calc(2 * var(--size));
+		height: var(--hex-height);
+		clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+		text-align: center;
+		line-height: var(--hex-height);
+		font-size: var(--hex-font-size);
+		font-family: 'ds-digital', Courier, monospace;
+		transition: 0.3s;
+	}
+	.hex.ready:hover {
+		opacity: 0.5;
+	}
+	.hex.selected {
+		animation-name: fadeInOut;
+		animation-duration: 1s;
+		animation-iteration-count: infinite;
+		animation-direction: reverse;
+	}
+	.hex.white {
+		background-color: white;
+	}
+	.hex.blue {
+		background-color: cyan;
+	}
+	@keyframes fadeInOut {
+		0% {
+			opacity: 0.5;
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0.5;
+		}
 	}
 </style>

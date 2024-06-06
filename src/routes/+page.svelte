@@ -1,8 +1,11 @@
 <script lang="ts">
 	import Board from './Board.svelte';
-	export let data;
+	import createGameBoardModel from './createGameBoardModel';
 	import type Question from './Question';
+	export let data;
 	let questions: Question[] = data.body.questions;
+	const letters: string[] = questions.map((q: Question) => q.letter);
+	let hexes = createGameBoardModel(letters);
 </script>
 
 <svelte:head>
@@ -11,12 +14,12 @@
 </svelte:head>
 
 <main class="container">
-	<Board {questions}></Board>
+	<Board {hexes}></Board>
 </main>
 
 <style>
 	.container {
-		margin: auto;
-		width: 50%;
+		display: flex;
+		flex-flow: row;
 	}
 </style>
