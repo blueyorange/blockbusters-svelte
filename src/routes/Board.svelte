@@ -19,7 +19,7 @@
 <style>
 	@import url('https://fonts.cdnfonts.com/css/ds-digital');
 	.grid {
-		--size: 50px;
+		--size: 8vh;
 		--hex-height: calc(sqrt(3) * var(--size));
 		font-size: var(--hex-height);
 		margin: auto;

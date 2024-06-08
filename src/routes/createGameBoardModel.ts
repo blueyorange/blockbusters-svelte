@@ -10,6 +10,8 @@ const board = [
 ];
 
 export default function createGameBoardModel(letters: string[]): GameHex[] {
+	// create a copy to not affect original array
+	const lettersCopy = letters.map((letter) => letter);
 	if (letters.length < 20) throw new RangeError('Not enough letters to fill board.');
 	// the reduce function flattens the resulting array
 	const hexes = board.reduce((outputArr, currRow, rowIndex) => {
@@ -34,7 +36,7 @@ export default function createGameBoardModel(letters: string[]): GameHex[] {
 							break;
 						default:
 							hex.taken = '';
-							hex.letter = (letters.length ? letters.pop() : '') as string;
+							hex.letter = (lettersCopy.length ? lettersCopy.pop() : '') as string;
 					}
 					return hex;
 				})
